@@ -1,0 +1,129 @@
+package class02;
+
+public class Code02_morris {
+    public static class Node {
+        public int val;
+        public Node left;
+        public Node right;
+
+        public Node(int val) {
+            this.val = val;
+        }
+    }
+
+    public static void morris(Node root) {
+        if (root == null) return;
+        Node cur = root;
+        while (cur != null) {
+            Node MostRightInLeft = cur.left;
+            if (MostRightInLeft != null) {
+                while (MostRightInLeft.right != null && MostRightInLeft.right != cur) {
+                    MostRightInLeft = MostRightInLeft.right;
+                }
+                if (MostRightInLeft.right == null) {
+                    MostRightInLeft.right = cur;
+                    cur = cur.left;
+                    continue;
+                } else {
+                    MostRightInLeft.right = null;
+                }
+            }
+            cur = cur.right;
+        }
+    }
+
+    public static void morrisIn(Node root) {
+        if (root == null) return;
+        Node cur = root;
+        while (cur != null) {
+            Node MostRightInLeft = cur.left;
+            if (MostRightInLeft != null) {
+                while (MostRightInLeft.right != null && MostRightInLeft.right != cur) {
+                    MostRightInLeft = MostRightInLeft.right;
+                }
+                if (MostRightInLeft.right == null) {
+                    MostRightInLeft.right = cur;
+                    cur = cur.left;
+                    continue;
+                } else {
+                    MostRightInLeft.right = null;
+                }
+            }
+            System.out.println(cur.val + " ");
+            cur = cur.right;
+        }
+        System.out.println();
+
+    }
+
+    public static void morrisPre(Node root) {
+        if (root == null) return;
+        Node cur = root;
+        while (cur != null) {
+            Node MostRightInLeft = cur.left;
+            if (MostRightInLeft != null) {
+                while (MostRightInLeft.right != null && MostRightInLeft.right != cur) {
+                    MostRightInLeft = MostRightInLeft.right;
+                }
+                if (MostRightInLeft.right == null) {
+                    System.out.println(cur.val + " ");
+                    MostRightInLeft.right = cur;
+                    cur = cur.left;
+                    continue;
+                } else {
+                    MostRightInLeft.right = null;
+                }
+            } else {
+                System.out.println(cur.val + " ");
+            }
+
+
+            cur = cur.right;
+        }
+    }
+
+    public static void morrisPost(Node root) {
+        if (root == null) return;
+        Node cur = root;
+        Node mostRightInLeft = null;
+        while (cur != null) {
+            mostRightInLeft = cur.left;
+            if (mostRightInLeft != null) {
+                while (mostRightInLeft.right != null && mostRightInLeft.right != cur) {
+                    mostRightInLeft = mostRightInLeft.right;
+                }
+                if (mostRightInLeft.right == null) {
+                    mostRightInLeft.right = cur;
+                    cur = cur.left;
+                    continue;
+                } else {
+                    printPost(cur);
+                    mostRightInLeft.right = null;
+                }
+            }
+            cur = cur.right;
+        }
+        printPost(root);
+        System.out.println();
+
+    }
+
+    public static void printPost(Node head){
+        Node cur = head.left;
+        reverseTree(cur);
+        while (cur != null) {
+            System.out.print(cur.val + " ");
+            cur = cur.right;
+        }
+        reverseTree(cur);
+    }
+    public static void reverseTree(Node cur){
+        Node pre = null;
+        while (cur != null) {
+            Node next = cur.right;
+            cur.right = pre;
+            pre = cur;
+            cur = next;
+        }
+    }
+}
