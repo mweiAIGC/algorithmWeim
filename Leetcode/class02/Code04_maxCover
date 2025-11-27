@@ -1,0 +1,89 @@
+package class02;
+
+import java.util.Comparator;
+import java.util.Arrays;
+import java.util.TreeSet;
+
+public class Code04_maxCover {
+    public static class Rectangle{
+        public int left;
+        public int top;
+        public int right;
+        public int bottom;
+        public Rectangle(int left, int top, int right, int bottom){
+            this.left = left;
+            this.right = right;
+            this.top = top;
+            this.bottom = bottom;
+        }
+    }
+    public static int maxCover(Rectangle[] rects){
+        if(rects == null || rects.length == 0) return 0;
+        Arrays.sort(rects,new BottomComparator());
+        TreeSet<Rectangle> leftOrdered = new TreeSet<>(new LeftComparator());
+        int ans = 0;
+        for(int i = 0; i< rects.length; i++){
+            int curBottom = rects[i].bottom;
+            int index = i;
+            while(rects[index].bottom == curBottom){
+                leftOrdered.add(rects[index]);
+                index++;
+            }
+            i = index;
+            removeLowerOnCurDown(leftOrdered,curBottom);
+
+            TreeSet<Rectangle> rightOrdered = new TreeSet<>(new RightComparator());
+            for(Rectangle rec : leftOrdered){
+                removeLeftOnCurLeft(rightOrdered,rec.left);
+                rightOrdered.add(rec);
+                ans = Math.max(ans,rightOrdered.size());
+            }
+
+        }
+        return ans;
+    }
+
+    public static void removeLowerOnCurDown(TreeSet<Rectangle> leftOrdered, int curBottom){
+        TreeSet<Rectangle> remove = new TreeSet<>(new LeftComparator());
+        for(Rectangle rec: leftOrdered){
+            if(rec.top <= curBottom){
+                remove.add(rec);
+            }
+        }
+        leftOrdered.removeAll(remove);
+    }
+    public static void removeLeftOnCurLeft(TreeSet<Rectangle> rightOrdered, int curLeft){
+        TreeSet<Rectangle> remove = new TreeSet<>(new RightComparator());
+        for(Rectangle rec: rightOrdered){
+            if(rec.right<=curLeft){
+                remove.add(rec);
+            }
+        }
+        rightOrdered.removeAll(remove);
+    }
+
+
+
+    public static class LeftComparator implements Comparator<Rectangle> {
+        @Override
+        public int compare(Rectangle r1, Rectangle r2) {
+            return Integer.compare(r1.left, r2.left);
+        }
+    }
+
+    public static class RightComparator implements Comparator<Rectangle> {
+        @Override
+        public int compare(Rectangle r1, Rectangle r2) {
+            return Integer.compare(r1.right, r2.right);
+        }
+    }
+
+    public static class BottomComparator implements Comparator<Rectangle> {
+        @Override
+        public int compare(Rectangle r1, Rectangle r2) {
+            return Integer.compare(r1.bottom,r2.bottom);
+        }
+    }
+
+
+}
