@@ -1,0 +1,69 @@
+package class02;
+
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.Arrays;
+public class Code03_coverMax {
+    public static int coverMax(int[][] lines) {
+        int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < lines.length; i++) {
+            min = Math.min(min,lines[i][0]);
+            max = Math.max(max,lines[i][1]);
+        }
+
+        int cover = Integer.MIN_VALUE;
+        for(double p = min+0.5;p<max;p++){
+            int cur = 0;
+            for(int i = 0;i<lines.length;i++){
+                if(cur>lines[i][0] && cur<lines[i][1]){
+                    cur ++;
+                }
+            }
+            cover = Math.max(cover, cur);
+        }
+        return cover;
+    }
+
+    public static class line{
+        public int start;
+        public int end;
+        public line(int start, int end){
+            this.start = start;
+            this.end = end;
+        }
+    }
+
+
+    public static int maxCover(int[][] m){
+        line[] lines = new line[m.length];
+        for (int i = 0; i < m.length; i ++){
+            lines[i] = new line(m[i][0],m[i][1]);
+        }
+        Arrays.sort(lines, new startComparator());
+        PriorityQueue<line> pq = new PriorityQueue<>(new endComparator());
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < lines.length;i++){
+            while(!pq.isEmpty() && pq.peek().end <= lines[i].start){
+                pq.poll();
+            }
+            pq.add(lines[i]);
+            max = Math.max(max, pq.size());
+        }
+        return max;
+    }
+
+    public static class startComparator implements Comparator<line> {
+        @Override
+        public int compare(line a, line b){
+            return a.start - b.start;
+        }
+    }
+
+    public static class endComparator implements Comparator<line>{
+        @Override
+        public int compare(line a, line b){
+            return a.end - b.end;
+        }
+    }
+}
