@@ -1,0 +1,41 @@
+package class02;
+
+public class Code01_LongestPalindromicSubstring {
+    public static int longestPalindrome(String s) {
+        if (s == null || s.length() == 0) return 0;
+        char[] chars = manacherString(s);
+//      C 表示回文字串的中点，R表示回文串最右不是回文的位置。
+        int C = -1, R = -1;
+        int[] ans = new int[chars.length];
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < chars.length; i++) {
+            ans[i] = R > i ? Math.min(ans[2*C-i],R-i):1;
+            while(i-ans[i]>-1&&i+ans[i]<ans.length) {
+                if(chars[i-ans[i]]==chars[i+ans[i]]) {
+                    ans[i]++;
+                }else {
+                    break;
+                }
+            }
+
+            if(ans[i] + C > R){
+                R = ans[i] + C;
+                C = ans[i];
+            }
+            max = Math.max(max, ans[i]);
+
+        }
+        return max-1;
+    }
+
+    public static char[] manacherString(String str) {
+        char[] charArr = str.toCharArray();
+        char[] res = new char[str.length() * 2 + 1];
+        int index = 0;
+        for (int i = 0; i != res.length; i++) {
+            res[i] = (i & 1) == 0 ? '#' : charArr[index++];
+        }
+        return res;
+    }
+
+}
