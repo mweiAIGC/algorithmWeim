@@ -1,0 +1,82 @@
+package class08;
+
+import java.util.Comparator;
+import java.util.PriorityQueue;
+
+public class Code01_TrappingRainWater{
+    public static class minHeap{
+        public int val;
+        public int col;
+        public int row;
+        public minHeap(int val, int col, int row){
+            this.val  = val;
+            this.col = col;
+            this.row = row;
+        }
+    }
+
+    public static class MinComparator implements Comparator<minHeap> {
+        @Override
+        public int compare(minHeap o1, minHeap o2) {
+            return o1.val - o2.val;
+        }
+    }
+
+    public static PriorityQueue<minHeap> pq = new PriorityQueue<>(new MinComparator());
+    public static void fillEdge(int[][]grid, boolean[][] isEntered){
+
+        for(int i = 0; i < grid.length-1; i++){
+            isEntered[i][0] = true;
+            pq.add(new minHeap(grid[i][0],i,0));
+        }
+        for(int i = 1; i < grid.length; i++){
+            isEntered[i][grid[0].length-1] = true;
+            pq.add(new minHeap(grid[i][grid[0].length-1],i,grid[0].length-1));
+        }
+        for(int i = 1; i < grid[0].length; i++){
+            isEntered[0][i] = true;
+            pq.add(new minHeap(grid[0][i],0,i));
+        }
+        for(int i = 0; i < grid[0].length-1; i++){
+            isEntered[grid.length-1][i] = true;
+            pq.add(new minHeap(grid[grid.length-1][i],grid.length-1,i));
+        }
+    }
+    public static int trap(int[][] height) {
+        int c = height.length;
+        int r = height[0].length;
+        boolean[][] isEntered = new boolean[c][r];
+        fillEdge(height, isEntered);
+        int max = Integer.MIN_VALUE;
+        int water = 0;
+        while(! pq.isEmpty()){
+            minHeap cur = pq.poll();
+            max = Math.max(max, cur.val);
+            int row = cur.row;
+            int col = cur.col;
+            if(row > 0 && !isEntered[row-1][col]){
+                water += Math.max(0, max - height[row-1][col]);
+                isEntered[row-1][col] = true;
+                pq.add(new minHeap(height[row-1][col],row-1,col));
+            }
+            if(row < c-1 && !isEntered[row+1][col]){
+                water += Math.max(0, max - height[row+1][col]);
+                isEntered[row+1][col] = true;
+                pq.add(new minHeap(height[row+1][col],row+1,col));
+            }
+            if(col > 0 && !isEntered[row][col-1]){
+                water += Math.max(0, max - height[row][col-1]);
+                isEntered[row][col-1] = true;
+                pq.add(new minHeap(height[row][col-1],row,col-1));
+            }
+            if(col < r-1 && !isEntered[row][col+1]){
+                water += Math.max(0, max - height[row][col+1]);
+                isEntered[row][col+1] = true;
+                pq.add(new minHeap(height[row][col+1],row,col+1));
+            }
+
+        }
+        return water;
+
+    }
+}
