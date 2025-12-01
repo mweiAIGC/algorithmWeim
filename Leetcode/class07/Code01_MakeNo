@@ -1,0 +1,21 @@
+package class07;
+
+/**
+ * 连续的数字{i，j,k} 不允许存在i+k = 2*k
+ */
+public class Code01_MakeNo {
+    public static int[] makeNo(int size){
+        if(size == 1) return new int[]{1};
+        int halfSize = size/2;
+        int[] bas = makeNo(halfSize);
+        int index = 0;
+        int[] ans = new int[size];
+        for(; index < halfSize; index++){
+            ans[index] = bas[index]*2-1;
+        }
+        for(int i = 0; index < size; index++, i++){
+            ans[index] = bas[index]*2;
+        }
+        return ans;
+    }
+}
