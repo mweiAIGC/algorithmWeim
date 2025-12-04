@@ -1,0 +1,39 @@
+package class10;
+
+public class Code03_StringCross {
+    /**
+     * 给定三个字符串str1、str2和aim，如果aim包含且既包含来自str1和str2的所有字符，而且在aim中属于石头人
+     * 的字符之间保持原来在str1中的顺序，属于str2的字符之间保持原来在str2中的顺序，那么成aim是str1和str2的交错组成。实现
+     * 一个函数，判断aim是否是str1和str2交错组成
+     * eg:str1="AB",str2="12",那么"AB12","A12B","A1B2","12AB","1A2B"等都是str1和str2的交错组成
+     *
+     * 算法思路：
+     * 1:构建一个动态dp表,首先验证str1中0个字符，str2(0,str2.length())的字符范围，是否与aim中(0,str2.length())字符相等。
+     * 再验证str2中0字符。。。
+     * 2.利用dp[i-1][j]和dp[i][j-1]的信息。(①如果str1的最后一个字符和aim中的最后一个字符相等，那么dp[i][j]=dp[i-1][j];②
+     * 如果str2的最后一个字符和aim中的最后一个字符相等，那么dp[i][j]=dp[i][j-1])
+     * 3.return:dp[str1.length()][str2.length()]
+     */
+    public static boolean StringCross(String str1, String str2, String aim){
+        char[] c1 = str1.toCharArray();
+        char[] c2 = str2.toCharArray();
+        char[] cAim = aim.toCharArray();
+        boolean[][] dp = new boolean[c1.length][c2.length];
+        for(int i = 0; i < c1.length; i++){
+            dp[i][0] = c1[i] == cAim[i];
+        }
+        for(int i = 0; i < c2.length; i++){
+            dp[0][i] = c2[i] == cAim[i];
+        }
+        for(int i = 1; i <c1.length; i++){
+            for(int j = 0; j < c2.length; j++){
+                if((c1[i-1] == cAim[i+j-1] && dp[i-1][j])||(c2[j-1] == cAim[i+j-1] && dp[i][j-1])){
+                    dp[i][j] = true;
+                }else{
+                    dp[i][j] = false;
+                }
+            }
+        }
+        return dp[c1.length-1][c2.length-1];
+    }
+}
