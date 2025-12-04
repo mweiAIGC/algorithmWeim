@@ -1,0 +1,38 @@
+package class10;
+import java.util.HashMap;
+public class Code02_splitParts {
+    /**
+     * 给定一个正数数组arr，返回该数组能不能分成4个部分，并且每个部分的累加和相等，切分位置的数不要
+     * eg：
+     * arr=[3,2,4,1,4,9,5,10,1,2,2]返回true
+     * 三个切割点下标为2，5，10，切出的四个子数组为[3,2],[1,4],[5],[1,2,2],累加和都是5
+     * 算法思路：
+     * 1.切三刀，从右往左看，第一刀至少在N-2的位置，那么依次就是N-4,N-6
+     * 2.i从(1,N-6)开始遍历，求得i左边位置的leftSum，那么第二刀应该满足2*leftSum+arr[i1],第三刀应该买满3*leftSum+arr[i1]+arr[i2]
+     * ，且右边位置的sum也等于leftSum.
+     * 3.定义一个hashmap<Integer,Integer> key->某一个位置的累加和, value 位置坐标
+     */
+    public static boolean splitParts(String s){
+        char[] chars = s.toCharArray();
+        HashMap<Integer, Integer> map = new HashMap<>();
+        int sum = 0;
+        for(int i = 0; i < chars.length; i++){
+            sum += chars[i];
+            map.put(sum,i);
+        }
+        int leftSum = chars[0];
+        for(int i = 1; i < chars.length-1; i++){
+            int tempSum = 2 * leftSum + chars[i];
+            if(map.containsKey(tempSum)){
+                tempSum += chars[map.get(tempSum)] + leftSum;
+                if(map.containsKey(tempSum)){
+                    if(tempSum + chars[map.get(tempSum)] + leftSum == sum){
+                        return true;
+                    }
+                }
+            }
+            leftSum += chars[i];
+        }
+        return false;
+    }
+}
