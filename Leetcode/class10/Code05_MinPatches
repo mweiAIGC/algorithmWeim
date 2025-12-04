@@ -1,0 +1,35 @@
+package class10;
+
+import java.util.Arrays;
+
+public class Code05_MinPatches {
+    /**
+     * 给定一个有序的正数数组arr和一个正数aim，如果可以自由选择arr中的数字，
+     * 像累加得到1~aim范围上所有的数，返回arr最少还缺几个数
+     * eg:
+     * arr={1,2,3,7},aim=15,想累加得到1~15范围上所有的数，arr还缺14这个数，所以返回1
+     */
+    public static int CumulativeSum(int[] arr, int aim){
+        Arrays.sort(arr);
+        int range = 0; // 已经完成1~range的目标
+        int ans = 0; // 缺多少个数字
+        for(int i = 0; i < arr.length; i++){
+            while(arr[i] > range + 1){
+                range=++range;
+                ans++;
+                if(range>=aim){
+                    return ans;
+                }
+            }
+            range += arr[i];
+            if(range>=aim){
+                return ans;
+            }
+        }
+        while(range+1 <= aim){
+            range = ++range;
+            ans++;
+        }
+        return ans;
+    }
+}
