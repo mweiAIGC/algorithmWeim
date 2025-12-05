@@ -1,0 +1,89 @@
+package class11;
+
+import java.util.HashMap;
+
+public class Code01_LargestComponentSizebyCommonFactor {
+    /**
+     * 一个数组中，如果两个数的最小公共因子有大于1的，则认为这两个数之间有通路，返回数组中，有多少个独立的域
+     */
+    public static int largestComponentSize2(int[] arr) {
+        int N = arr.length;
+        UnionFind unionFind = new UnionFind(N);
+        HashMap<Integer, Integer> fatorsMap = new HashMap<>();
+        for (int i = 0; i < N; i++) {
+            int num = arr[i];
+            int limit = (int) Math.sqrt(num);
+            for (int j = 1; j <= limit; j++) {
+                if (num % j == 0) {
+                    if (j != 1) {
+                        if (!fatorsMap.containsKey(j)) {
+                            fatorsMap.put(j, i);
+                        } else {
+                            unionFind.union(fatorsMap.get(j), i);
+                        }
+                    }
+                    int other = num / j;
+                    if (other != 1) {
+                        if (!fatorsMap.containsKey(other)) {
+                            fatorsMap.put(other, i);
+                        } else {
+                            unionFind.union(fatorsMap.get(other), i);
+                        }
+                    }
+                }
+            }
+        }
+        return unionFind.maxSize();
+    }
+    public static int gcd(int m, int n) {
+        return n == 0 ? m : gcd(n, m % n);
+    }
+
+    public static class UnionFind {
+        private int[] parent;
+        private int[] sizes;
+        private int[] help;
+
+        public UnionFind(int n) {
+            parent = new int[n];
+            sizes = new int[n];
+            help = new int[n]; // 保存沿途的所有节点
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+                sizes[i] = 1;
+            }
+        }
+
+        public int maxSize() {
+            int ans = 0;
+            for (int size : sizes) {
+                ans = Math.max(ans, size);
+            }
+            return ans;
+        }
+
+        private int find(int i) {
+            int hi = 0;
+            while (i != parent[i]) {
+                help[hi++] = i;
+                i = parent[i];
+            }
+            for (hi--; hi >= 0; hi--) {
+                parent[help[hi]] = i; // 将沿途的所有节点的父节点都设置为i
+            }
+            return i;
+        }
+
+        public void union(int i, int j) {
+            int f1 = find(i);
+            int f2 = find(j);
+            if (f1 != f2) {
+                int big = sizes[f1] >= sizes[f2] ? f1 : f1;
+                int small = big == f1 ? f2 : f1;
+                parent[small] = big;
+                sizes[big] = sizes[f1] + sizes[f2];
+            }
+        }
+    }
+
+}
