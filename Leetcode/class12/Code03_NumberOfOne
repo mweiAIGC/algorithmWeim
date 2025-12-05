@@ -1,0 +1,26 @@
+package class12;
+
+public class Code03_NumberOfOne {
+    /**
+     * 给定一个正数N，表示你在纸上写下1~N所有的数字，
+     * 返回在书写的过程中，一共写下多少个1
+     */
+    public static int process(int num){
+        if (num <= 0) return 0;
+        int k  =  0;
+        int o = num;
+        while(o != 0){
+            o/=10;
+            k++;
+        }
+        int tmp = (int) Math.pow(10,k-1);
+        int first  = num / tmp;
+        int firstOneNum = first == 1 ? num % tmp +1 : tmp;
+        int otherOneNum = first *(k-1) * (tmp/10);
+        return firstOneNum + otherOneNum + process(num%tmp);
+
+
+    }
+
+
+}
