@@ -1,0 +1,32 @@
+package class11;
+
+public class Code04_PalindromeMinAdd {
+    /**
+     * 给定一个字符串，如果可以再字符串任意位置添加字符，最少添加几个能让字符串整体都是回文串
+     *
+     * 算法思路：通过动态dp实现
+     * 1.首先(i,i)位置需要添加0个字符串,即dp[i][i] = 0；(i,i+1)如果字符相等就添加0个字符，不等就添加一个字符
+     * 2.先考虑(i,j-1)位置是回文串，那么在(i-1)添加一个和j位置相等的字符。即dp[i][j]=dp[i][j-1]+1
+     * 3.先考虑(i+1,j)位置是回文串，那么在i位置添加一个和（j+1）位置相等的字符。即dp[i][j]=dp[i+1][j]+1
+     * 4.如果str[i]==str[j],那么dp[i][j] = dp[i+1][j-1]
+     */
+    public static int addStrForPalindrome(String str) {
+        if(str == null || str.length()< 2) return 0;
+        char[] arr = str.toCharArray();
+        int N = arr.length;
+        int[][] dp = new int[N][N];
+        for(int i = 0; i < N-1;i++){
+            dp[i][i+1] = arr[i]==arr[i+1] ? 0:1;
+        }
+        for(int row = N-3; row>=0; row--){
+            for(int col = row+2; col < N; col++){
+              if (arr[row] == arr[col]) {
+                    dp[row][col] = dp[row+1][col-1];
+                }else {
+                  dp[row][col] = Math.min(dp[row+1][col], dp[row][col-1]) + 1;
+              }
+            }
+        }
+        return dp[0][N-1];
+    }
+}
