@@ -1,0 +1,32 @@
+package class12;
+
+public class Code02_MoneyWay {
+    /**
+     * 现有n1+n2种面值的硬币，其中前n1种为普通币，可以取任意枚，后n2种为纪念币，每种最多只能取一枚，
+     * 每种硬币有一个面值，问能有多少种方法拼出m的面值（普通币无重复值；纪念币可能有重复值）
+     */
+    public static int[][] CommonMoney(int[] p, int q){
+        int N = p.length;
+        int[][] dp = new int[N][q];
+        for(int i = 0; q-i*p[0] >=0;i++){
+            dp[0][i*p[0]] = q-i*p[0] >=0 ? 1: 0;
+        }
+        for(int i = 1; i < N; i++){
+            dp[i][0] = 1;
+        }
+        for(int i  = 1; i < N; i++){
+            for(int j = 1; j < q; j++){
+                dp[i][j] = dp[i-1][j];
+                dp[i][j] += j-p[i] >=0 ? dp[i][j-p[i]] : 0;
+            }
+        }
+        return dp;
+
+    }
+    public static int[][] commemorativeCoin(int[]p, int q){
+        int[][] dp = new int[p.length][q];
+
+
+        return dp;
+    }
+}
