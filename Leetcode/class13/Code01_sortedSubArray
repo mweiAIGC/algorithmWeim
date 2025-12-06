@@ -1,0 +1,61 @@
+package class13;
+
+import java.util.Arrays;
+import java.util.HashSet;
+
+public class Code01_sortedSubArray {
+    /**
+     * 先给出可整合数组的定义：如果一个数组在排序之后，每相邻两个数差的绝对值都为1，则该数组为柯政和数组。例如，
+     * [5,3,4,6,2]排序之后为[2,3,4,5,6]，符合每相邻两个数差的绝对值都为1，所以这个数组为柯政和数组。给定
+     * 一个整型数组arr，请返回其中最大可整合子数组的长度。例如,[5,5,3,2,6,4,3]的最大可整合子数组为[5,3,2,6,4]，则返回5.
+     */
+    public static int SortedSubArray(int[] arr) {
+        int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE;
+        int len = 0;
+        HashSet<Integer> set = new HashSet<>();
+        if (arr == null || arr.length == 0) return 0;
+        for (int start = 0; start < arr.length; start++) {
+            set.clear();
+            for (int end = start + 1; end < arr.length; end++) {
+                if (set.contains(arr[end])) { // 规则1：去重
+                    break;
+                }
+                set.add(arr[end]);
+                min = Math.min(min, arr[end]);
+                max = Math.max(max, arr[end]);
+                if (max - min == end - start) {   // 规则2：max-min == len-1
+                    len = Math.max(len, end - start + 1);
+                }
+            }
+
+        }
+        return len;
+    }
+
+
+    public static int SortedSubArray2(int[] arr) {
+        int N = arr.length;
+        int len = 0;
+        for (int start = 0; start < N; start++) {
+            for (int end = start + 1; end < N; end++) {
+                if (isIntegrate(arr, start, end)) {
+                    len = Math.max(len, end - start + 1);
+                }
+            }
+        }
+        return len;
+    }
+
+    public static boolean isIntegrate(int[] arr, int i, int j) {
+        int[] tempArr = Arrays.copyOfRange(arr, i, j);
+        Arrays.sort(tempArr);
+        for (int k = 1; k < tempArr.length; k++) {
+            if (tempArr[k] - 1 != tempArr[k - 1]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+}
