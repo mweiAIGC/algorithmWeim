@@ -1,0 +1,128 @@
+package class14;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.HashSet;
+
+public class Code04_wordSearch {
+    /**
+     * 给定一个字符类型的二维数组board，和一个字符串组成的列表words。可以从board的任意位置出发，
+     * 每一步可以走向上下左右四个方向，但是一条路径已经走过的位置，不能重复走。
+     * 返回words的哪些单词可以走出来。
+     * eg:
+     * board=[
+     * ['o','a','a','n'],
+     * ['e','t','a','e'],
+     * ['i','h','k','r'],
+     * ['i','f','l','v'],
+     * ]
+     * words=["oath","pea","eat","rain"]
+     * 输出：["eat","oath"]
+     * 算法思路：基于words构建前缀树 (难点：如何让path不走回头路)
+     * 1.在递归遍历board[row][col]上下左右节点位置前，先将board[row][col]设置为0(设置标志),
+     * 这样的话递归遍历到该位置时，如果该位置为0，就直接return
+     * 2.为了防止board中能重复遍历到words中的某个word，设置pass。如果遍历在前缀树中遍历到某节点，就将当前TrieNode.pass--;
+     * 3.通过在TrieNode中设置end来标志word字符结束位置。
+     */
+    public static class TrieNode {
+        public TrieNode[] nexts;
+        public int pass;
+        public int end;
+
+        public TrieNode() {
+            nexts = new TrieNode[26];
+            pass = 0;
+            end = 0;
+        }
+
+    }
+
+    public static void fillWord(TrieNode head, String word) {
+        /**
+         * 通过word构建前缀树
+         */
+        head.pass++;
+        char[] chs = word.toCharArray();
+        int index = 0;
+        TrieNode cur = head;
+        for (int i = 0; i < chs.length; i++) {
+            index = chs[i] - 'a';
+            if (cur.nexts[index] == null) {
+                cur.nexts[index] = new TrieNode();
+            }
+            cur = cur.nexts[index];
+            cur.pass++;
+        }
+        cur.end++;
+    }
+
+    public static String generatePath(LinkedList<Character> path) {
+        char[] str = new char[path.size()];
+        int index = 0;
+        for (Character c : path) {
+            str[index++] = c;
+        }
+        return String.valueOf(str);
+    }
+
+    public static List<String> findWords(char[][] board, String[] words) {
+        TrieNode head = new TrieNode();
+        HashSet<String> set = new HashSet<>();
+        for (String word : words) {
+            if (!set.contains(word)) {
+                set.add(word);
+                fillWord(head, word);
+            }
+
+        }
+        List<String> res = new LinkedList<>();
+        LinkedList<Character> path = new LinkedList<>();
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board[0].length; col++) {
+                process(board, row, col, path, head, res);
+            }
+
+        }
+        return res;
+    }
+
+    public static int process (char[][]board, int row, int col, LinkedList<Character> path,
+                               TrieNode cur, List<String> res){
+        char cha = board[row][col];
+        if(cha == '0') return 0;
+
+        int index = cha - 'a';
+        if(cur.nexts[index] == null || cur.nexts[index].pass ==0) return 0;
+
+        cur = cur.nexts[index];
+        path.addLast(cha);
+        int fix = 0;
+        if(cur.end >0){
+            res.add(generatePath(path));
+            cur.end--;
+            fix++;
+        }
+        board[row][col] = 0;
+        if(row>0){
+            fix += process(board,row-1,col,path,cur,res);
+        }
+        if(row < board.length-1){
+            fix += process(board,row+1,col,path,cur,res);
+        }
+        if(col>0){
+            fix += process(board,row,col-1,path,cur,res);
+        }
+        if(col < board[0].length-1){
+            fix += process(board,row,col+1,path,cur,res);
+        }
+        board[row][col] = cha;
+        path.pollLast();
+        cur.pass -=fix;
+        return fix;
+
+    }
+
+
+
+
+}
