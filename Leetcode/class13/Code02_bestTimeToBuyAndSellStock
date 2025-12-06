@@ -1,0 +1,34 @@
+package class13;
+
+public class Code02_bestTimeToBuyAndSellStock {
+//    /*
+//     * 给定一个数组arr，从左到右表示昨天从早到晚股票的价格。作为一个事后诸葛亮，
+//     * 你想知道如果只做一次交易，且每次交易只买卖一股，返回能挣到的最大钱数。
+//     */
+    /**给定一个数组arr，从左到右表示昨天从早到晚股票的价格。作为一个事后诸葛亮，你想知道如果随便交易，
+     * 且每次交易只买卖一股，返回能挣到的最大钱数。
+     * 算法分析：通过动态dp[i][j]数组实现,其中i表示i时刻股票的价格，j表示剩余交易的次数。
+     * 1.如果i时刻不交易股票，那么dp[i][j] = dp[i-1][j].
+     * 2.如果i时刻交易股票，那么要判断何时购入股票，即dp[i][j] =
+     * Math.max(dp[0][j-1]-prices[0]+prices[i],dp[1][j-1]-prices[1]+prices[i],...,dp[i][j-1]-prices[i]+prices[i])
+     * @param k:交易剩余次数
+     * @param prices：交易股票价格
+     * @return
+     */
+    public static int maxProfit(int k, int[] prices) {
+        if (prices.length == 0 || prices == null) return 0;
+        int N = prices.length;
+        int[][] dp = new int[N][k + 1];
+        int ans = 0;
+        for (int j = 1; j <= k; j++) {
+            int t = dp[0][j] - prices[0];
+            for (int i = 1; i < N; i++) {
+                t = Math.max(t, dp[i][j - 1] - prices[i]);
+                dp[i][j] = Math.max(t + prices[i], dp[i - 1][j]);
+                ans = Math.max(ans, dp[i][j]);
+            }
+        }
+        return ans;
+    }
+
+}
