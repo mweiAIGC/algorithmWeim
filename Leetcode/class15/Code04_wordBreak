@@ -1,0 +1,87 @@
+package class15;
+
+import java.util.HashSet;
+
+public class Code04_wordBreak {
+    /*
+     * 假设所有字符都是小写字母，长字符串是str
+     * arr是去重的单词表，每个单词都不是空字符串且可以使用任意次
+     * 使用arr中的单词有多少种拼接str的方式，返回方法数
+     * method1:采用分解法，String可以分解为arr中的单词表
+     * method2：前缀树
+     */
+    public static int ways1(String str, String[] arr) {
+        HashSet<String> set = new HashSet<>();
+        for (String s : arr) {
+            set.add(s);
+        }
+        return process(str, 0, set);
+    }
+
+    public static int process(String str, int i, HashSet<String> set) {
+        int ways = 0;
+        if (i == str.length()) return 1;
+        for (int end = i; end < str.length(); end++) {
+            String subStr = str.substring(i, end + 1);
+            if (set.contains(subStr)) {
+                ways += process(str, end + 1, set);
+            }
+
+        }
+
+        return ways;
+    }
+
+
+    public static class TrieNode {
+        public boolean end;
+        public TrieNode[] next;
+
+        public TrieNode() {
+            next = new TrieNode[26];
+            end = false;
+        }
+
+    }
+
+    public static void fillWord(TrieNode root, String word) {
+        char[] chars = word.toCharArray();
+        TrieNode cur = root;
+        for (char c : chars) {
+            int index = c - 'a';
+            if (cur.next[index] == null) cur.next[index] = new TrieNode();
+            cur = cur.next[index];
+        }
+        root.end = true;
+    }
+
+    public static int ways2(String str, String[] arr) {
+        if (str == null || str.length() == 0 || arr == null || arr.length == 0) {
+            return 0;
+        }
+        TrieNode root = new TrieNode();
+        for(String s : arr) {
+            fillWord(root, s);
+        }
+        return process1(str, 0, root);
+    }
+
+    public static int process1(String str, int i, TrieNode root){
+        if(i == str.length()) return 1;
+        TrieNode cur = root;
+        int ways = 0;
+        for(int end = i; end < str.length(); end++){
+            int index = str.charAt(end) - 'a';
+            if(cur.next[index] != null){
+                cur = cur.next[index];
+            }else {
+                break;
+            }
+            if(cur.end){
+                ways += process1(str,end+1,root);
+            }
+        }
+        return ways;
+    }
+
+}
