@@ -1,0 +1,43 @@
+package class15;
+
+public class Code03_MaxGAP {
+    /**
+     * 给定一无序数组arr，返回如果排序之后，相邻数之间的最大差值
+     * {3,1,7,9},如果排序后{1,3,7,9}，相邻数之间的最大差值来自3和7，返回6.
+     * 要求：不能真的进行排序，并且要求在时间复杂度O(N)内解决
+     */
+    public static int maxGap(int[] nums){
+        if(nums == null || nums.length < 2) return 0;
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for(int i = 0; i < nums.length; i++){
+            min = Math.min(min, nums[i]);
+            max = Math.max(max, nums[i]);
+        }
+        if(min == max) return 0;
+        int len = nums.length;
+        int[] mins = new int[len+1];
+        int[] maxs = new int[len+1];
+        int bit = 0; // 用bit表示桶号
+        boolean[] enterNum = new boolean[len+1];
+        for(int i = 0; i < len; i++){
+            bit = getBit(nums[i],len,min,max);
+            mins[bit] = mins[bit] == 0 ? Math.min(mins[bit], nums[i]): nums[i]; // max[i] 收集i号桶所有数字中的最小值
+            maxs[bit] = maxs[bit] == 0 ? Math.max(maxs[bit], nums[i]): nums[i];
+            enterNum[bit] = true;
+        }
+        int res = 0;
+        int lastMax = maxs[0];
+        for(int i = 1; i <= len; i++){
+            res = Math.max(res, mins[i] - lastMax);
+            lastMax = maxs[i];
+        }
+        return res;
+    }
+
+    public static int getBit(int num, int len, int min, int max){
+        return (num-min) *  len / (max - min);
+    }
+
+
+}
