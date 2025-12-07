@@ -1,0 +1,48 @@
+package class15;
+
+public class Code02_comeAndGoMaxPathSum {
+    /**
+     * 给定一个矩阵matrix，先从左上角开始，每一步只能往右走或者往下走，走到右下角。
+     * 然后从右下角出发，每一步只能往上或者往左走，再回到左上角。任何一个位置的数字，只能获得一遍。
+     * 返回最大路径和。
+     */
+
+    public static int ComeGOMaxPathSum(int[][] matrix){
+        return process(matrix,0,0,0);
+    }
+
+    // A来到的位置 Ax,Ay
+    // B来到的位置 Bx,By
+    // A 和 B 迈出点的步骤一样多，并且是同步走的 (By = Ax + Ay - Bx)
+    // 两人共同到达右下角，返回两个人路径的最大累加和
+    // 重要限制，来到同一个位置时，只能获得一份
+    public static int process(int[][] matrix, int Ax, int Ay, int Bx){
+        int N = matrix.length;
+        int M = matrix[0].length;
+        int By = Ax + Ay - Bx;
+        if(Ax == N-1 && Ay == M-1){
+            return matrix[N-1][M-1];
+        }
+        int AdownBright = -1;
+        int AdownBdown = -1;
+        int ArightBright = -1;
+        int ArightBdown = -1;
+        if(Ax+1<N && By+1<M){
+            AdownBright = process(matrix,Ax+1,Ay,Bx);
+        }
+        if(Ax+1<N && By<M){
+            AdownBdown = process(matrix,Ax+1,Ay,Bx+1);
+        }
+        if(Ax < N && By+1<M){
+            ArightBright = process(matrix,Ax,By+1,Bx);
+        }
+        if(Ax < N && By<M){
+            ArightBdown = process(matrix,Ax,By,Bx+1);
+        }
+        int nextStep = Math.max(Math.max(AdownBdown,AdownBright),Math.max(ArightBdown,ArightBright));
+        if(Ax == Bx){
+            return matrix[Ax][Ay] + nextStep;
+        }
+        return matrix[Ax][Ay] + matrix[Bx][By] + nextStep;
+    }
+}
