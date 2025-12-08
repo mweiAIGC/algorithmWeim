@@ -1,0 +1,44 @@
+package class16;
+
+import java.util.Comparator;
+import java.util.PriorityQueue;
+public class Code04_Coffee {
+    /**
+     * 数组arr代表每一个咖啡机冲一杯咖啡的时间，每个咖啡机只能串行的制作咖啡。
+     * 现在有n个人需要喝咖啡，只能用咖啡机来制作咖啡。认为每个人喝咖啡的时间非常短，
+     * 冲好的时间就是喝完的时间。每个人喝完之后咖啡杯是可以选择洗或者挥发干净，只有一台洗咖啡杯的机器，
+     * 只能串行的洗咖啡杯。洗杯子的机器洗完一个杯子时间是a，任何一个杯子自然挥发干净的时间为b。
+     * 假设时间点从0开始，返回所有人喝完咖啡并洗完咖啡杯的全部过程结束后，至少来到什么时间点。
+     */
+
+    public static class WashMachine{
+        public int start;
+        public int washTime;
+        public WashMachine(int washTime, int start){
+            this.start = start;
+            this.washTime = washTime;
+        }
+    }
+
+    public static class WashMachineComparator implements Comparator<WashMachine> {
+        @Override
+        public int compare(WashMachine o1, WashMachine o2) {
+            return o1.start + o2.washTime - (o1.start + o2.washTime);
+        }
+    }
+
+    public static int[] process(int[] arr, int M){
+        int[] ans = new int[M];
+        PriorityQueue<WashMachine> pq =new PriorityQueue<WashMachine>(new WashMachineComparator());
+        for(int wash: arr){
+            pq.add(new WashMachine(wash,0));
+        }
+        for(int i = 0; i < M; i++){
+            WashMachine wash = pq.poll();
+            ans[i] = wash.start + wash.washTime;
+            wash.start = ans[i];
+            pq.add(wash);
+        }
+        return ans;
+    }
+}
