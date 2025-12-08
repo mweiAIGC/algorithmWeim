@@ -1,0 +1,49 @@
+package class16;
+
+import java.util.HashMap;
+
+public class Code01_LongestSumEqualK {
+    /**
+     * 给定一个二叉树的头节点head,和一个数K
+     * 路径的定义：
+     * 可以从任何一个点开始，但是只能往下走，往下走可以走到任何节点停止返回路径累加和为K的所有路径中，
+     * 最长的路劲有多少个节点？
+     */
+    public static class Node {
+        public int val;
+        public Node left;
+        public Node right;
+
+        public Node(int value) {
+            val = value;
+        }
+    }
+
+    public static int ans = 0;
+
+    public static int longestSum(Node head, int k) {
+        HashMap<Integer, Integer> sumMap = new HashMap<>();
+        sumMap.put(0, -1);
+        process(head, 0, 0, k, sumMap);
+        return ans;
+    }
+
+    private static void process(Node head, int level, int preSum, int k, HashMap<Integer, Integer> sumMap) {
+        if (head != null) {
+            int allSum = preSum + head.val;
+
+            if (sumMap.containsKey(allSum - k)) {
+                ans = Math.max(ans, level-sumMap.get(allSum - k));
+            }
+            if (!sumMap.containsKey(allSum)) {
+                sumMap.put(allSum, level);
+            }
+            process(head.left, level + 1, allSum, k, sumMap);
+            process(head.right, level + 1, allSum, k, sumMap);
+            if (level == sumMap.get(allSum)) {
+                sumMap.remove(allSum);
+            }
+        }
+
+    }
+}
