@@ -1,0 +1,92 @@
+package class16;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+
+public class Code03_halfMajor {
+    /**
+     * 第一题：给定一个数组arr，如果有某个数出现次数超过了数组长度的一半，打印这个数，如果没有就不打印。
+     * 算法思路：一次删掉两个不同的数，最终留下的就是要求的结果。但是最后要验证，防止所求的数没有超过数组长度的一半。
+     * ----------------------------------------------------------------------------------------
+     * 第二题：给定一个数组arr和整数k，arr长度为N，如果有某些数出现次数超过了N/K，打印这些数，如果没有就不打印。
+     * 算法思路：
+     * 选择(k-1)个候选，如果候选没满，就将arr[i]加入HashMap<Integer, Integer>，其中key=arr[i],value=times，并将arr[i]出现的times++；
+     * 如果新选中arr[j]时候选满了，就将候选中的所有数字出现times--,如果某个数字的times==0,就将该数字删除。
+     */
+    public static void printHalfMajor(int[] arr) {
+        int cand = 0; //表示候选数
+        int times = 0; // 表示出现的次数
+        for (int i = 0; i < arr.length; i++) {
+            if (times == 0) {
+                cand = arr[i];
+                times = 1;
+            } else if (cand == arr[i]) {
+                times++;
+            } else {
+                times--;
+            }
+
+        }
+        // 为了防止选定的数没有超过一半，比如数组[1,2,3,4,5],5会成为候选
+        int hp = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (cand == arr[i]) {
+                hp++;
+            }
+        }
+        if (hp >= arr.length / 2) {
+            System.out.println(cand);
+        }
+    }
+
+    public static void printKMajor(int[] arr, int k) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            if (map.containsKey(arr[i])) {
+                map.put(arr[i], map.get(arr[i]) + 1);
+            } else {
+                if (map.size() == k) {
+                    conditionSize(map);
+                } else {
+                    map.put(arr[i], 1);
+                }
+            }
+        }
+
+        HashMap<Integer, Integer> realCount = new HashMap<>();
+        for (int num : arr) {
+            if (map.containsKey(num)) {
+                realCount.put(num, realCount.getOrDefault(num, 0) + 1);
+            }
+        }
+
+        for (HashMap.Entry<Integer, Integer> entry : realCount.entrySet()) {
+            if (entry.getValue() > arr.length / k) {
+                System.out.println(entry.getKey());
+            }
+        }
+        /**
+         *         for(Integer key:realCount.keySet()){
+         *             if(realCount.get(key) > arr.length/k){
+         *                 System.out.println(key);
+         *             }
+         *         }
+         */
+
+    }
+
+    public static void conditionSize(HashMap<Integer, Integer> map) {
+        List<Integer> removeList = new ArrayList<>();
+        for (HashMap.Entry<Integer, Integer> entry : map.entrySet()) {
+            entry.setValue(entry.getValue() - 1);
+            if (entry.getValue() == 0) {
+                removeList.add(entry.getKey());
+            }
+        }
+        for (Integer i : removeList) {
+            map.remove(i);
+        }
+    }
+
+}
