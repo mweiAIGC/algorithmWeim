@@ -1,0 +1,60 @@
+package class17;
+
+public class Code02_JosephusProblem {
+    /**
+     * 约瑟夫环问题。
+     * 算法思路：
+     * ① y = x % i
+     * ② y = (x-1) % i + 1 (因为数[1,2,3,4,5,6,7,...]和号[1,2,3,4,1,2,3,4,1,2,3,4..]都是是从1开始)
+     * ③ 对于编号[1,2,3,4,5,6,7]，假设遇到编号3就被杀掉，那么新老编号分别对应如下:
+     * old:[1,2,3,4,5,6,7]
+     * new:[5,6,X,1,2,3,4],
+     * 建立新编号与老编号的坐标轴关系，那么对应关系为： y = (x+m-1) % i(其中x表示新编号的位置，m表示被杀的编号),该公式
+     * 对应于y=(x-1)%i+1向左移动m个位置。
+     */
+    public static class Node {
+        public int val;
+        public Node next;
+
+        public Node(int value) {
+            val = value;
+        }
+    }
+
+    public static int getLive(int i, int m) { // m表示杀掉的编号，i表示杀之前的长度
+        if (i == 1) {
+            return 1;
+        }
+        return (getLive(i - 1, m) + m - 1) % i + 1;
+    }
+
+    public static Node josephusKill(Node head, int killNum){
+        if(head == null) return null;
+        Node cur = head.next;
+        int size = 1;
+        while(cur.next != head){
+            cur = cur.next;
+            size++;
+        }
+        int live = getLive(size,killNum); // 最终存活的编号
+        while(--live != 0){
+            head = head.next;
+        }
+        head.next = head;
+        return head;
+    }
+
+    public static void printCircularList(Node head) {
+        if (head == null) {
+            return;
+        }
+        System.out.print("Circular List: " + head.val + " ");
+        Node cur = head.next;
+        while (cur != head) {
+            System.out.print(cur.val + " ");
+            cur = cur.next;
+        }
+        System.out.println("-> " + head.val);
+    }
+
+}
