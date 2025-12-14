@@ -1,0 +1,83 @@
+package class20;
+
+import java.util.Stack;
+
+public class Code05_VisibleMountains {
+    /**
+     * 一个不含有负数的数组可以代表一圈环形山，每个位置的值代表山的高度。比如，{3，1，2，4，5}、
+     * {4，5，3，1，2}或{1，2，4，5，3}都表示同样结构的环形山。山峰A和山峰B能够相互看见的条件为：
+     * 1.如果A和B是同一座山，认为不能相互看见。
+     * 2.如果A和B是不同的山，并且在环中相邻，认为可以相互看见，
+     * 3.如果A和B是不同的山，并且在环中不相邻，假设两座山高度的最小值为min。
+     * 1）如果A通过顺时针方向到B的途中没有高度比min大的山峰，认为A和B可以相互看见
+     * 2）如果A通过逆时针方向到B的途中没有高度比min大的山峰，认为A和B可以相互看见
+     * 3）两个方向只有一个能看见，就算和B可以相互看见。给定已知不含有负数且没有重复值的数组arr,请返回有多少对山峰能够相互看见。
+     * 无重复值算法思路：(由小找大)对于任意一个不等于数组中最大值和次大值的x，都能在顺时针和逆时针找到一个大于x的值构成可以互相看见的山峰对，
+     * 即(N-2)*2;而最大值和次大值也可构成山峰对，所以最终有2*N-3对山峰对满足可以相互看见。
+     * 简介：给定一个不含有负数但可能含有重复值的数组arr，返回有多少对山峰能够相互看见
+     * 算法思路：利用单调栈,(栈底)大——>小(栈顶)：
+     * ①如果入栈元素大于栈顶元素，栈顶元素出栈；假设出站的栈顶元素有k个，那么表示栈顶元素之间可以两两看见，即C(2,k);
+     * 若此时栈不为空，出栈的栈顶元素顺时针和逆时针方向上各有一个，即k*2，所以有C(2,k)+k*2.
+     * ②清空栈时，若栈只有除自身元素外一个元素时，有C(2,k)+k*(stack.peek().times>1?2:1)；弹出最后一条数据时候是C(2,k)，因为是小找大，最后一条数据是最大值
+     */
+    public static class Record {
+        public int val;
+        public int times;
+
+        public Record(int val) {
+            this.val = val;
+            this.times = 1;
+        }
+    }
+
+
+    public static int getNumOfVisibleMountains(int[] arr) {
+        if(arr == null || arr.length == 0) return 0;
+        Stack<Record> stack = new Stack<>();
+        int MaxIndex = 0;
+        for (int i = 1; i < arr.length; i++) {
+            MaxIndex = arr[i] > arr[MaxIndex] ? i : MaxIndex;
+        }
+        stack.push(new Record(arr[MaxIndex]));
+        int nextIndex = NextRecord(arr, MaxIndex);
+        int ans = 0;
+        while (nextIndex != MaxIndex) {
+            while (stack.peek().val < arr[nextIndex]) {
+                Record r = stack.pop();
+                ans += MiddleValue(r) + 2 * r.times;
+            }
+            if (stack.peek().val == arr[nextIndex]) {
+                stack.peek().times++;
+            } else { // >
+                stack.push(new Record(arr[nextIndex]));
+            }
+            nextIndex = NextRecord(arr, nextIndex);
+        }
+        while (stack.size() > 2) {
+            Record r = stack.pop();
+            ans += MiddleValue(r) + 2 * r.times;
+        }
+        if (stack.size() == 2) {
+            Record r = stack.pop();
+            ans += MiddleValue(r) + r.times * (stack.peek().times == 1 ? 1 : 2);
+        }
+
+        ans += MiddleValue(stack.pop());
+        return ans;
+
+    }
+
+    public static int MiddleValue(Record record) {
+        int times = record.times;
+        return times == 1 ? 1 : (times * (times - 1) / 2);
+    }
+
+    public static int NextRecord(int[] arr, int index) {
+        return index < arr.length - 1 ? index + 1 : 0;
+    }
+
+    public static int LastRecord(int[] arr, int index) {
+        return index > 0 ? index - 1 : arr.length - 1;
+    }
+
+}
