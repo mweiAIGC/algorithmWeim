@@ -1,0 +1,96 @@
+package class20;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+public class Code01_SplitNumber {
+    /**
+     * 给定一个正数1，裂开的方法有一种;
+     * 给定一个整数2，裂开的方法有两种，(1,1),(1);
+     * 给定一个正数3，裂开的方法有三种(1,1,1),(1,2),(3);
+     * 给定一个正数4，裂开的方法有5种，(1,1,1,1),(1,1,2),(1,3),(2,2),(4).
+     * 给定一个正数n，求裂开的方法数，动态规划优化状态依赖的技巧
+     */
+
+    /**
+     * 基于回溯收集所有拆分路径
+     */
+    public static int way(int n) {
+        List<List<Integer>> ans = new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+        process(1, n, path, ans);
+        System.out.println(ans);
+        return ans.size();
+    }
+
+    public static void process(int start, int res, List<Integer> path, List<List<Integer>> ans) {
+        if (res == 0) {
+            ans.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = start; i <= res; i++) {
+            path.add(i);
+            process(i, res - i, path, ans);
+            path.remove(path.size() - 1);
+        }
+    }
+
+    //  暴力递归（带剪枝，避免重复）
+    public static int ways2(int n) {
+        int pre = 1;
+        int ans = process1(pre, n);
+        return ans;
+    }
+
+    public static int process1(int pre, int res) {
+        if (res == 0) return 1;
+        if (pre > res) return 0;
+        int way = 0;
+        for (int i = pre; i <= res; i++) {
+            way += process1(i, res - i);
+        }
+        return way;
+    }
+
+    // 动态规划（优化递归的重复计算）
+    public static int ways3dp(int n) {
+        int[][] dp = new int[n + 1][n + 1];
+        for (int pre = 1; pre <= n; pre++) {
+            dp[pre][0] = 1;
+        }
+        for (int pre = n; pre >= 1; pre--) {
+            for (int res = pre; res <= n; res++) {
+                int ways = 0;
+                for (int i = pre; i <= res; i++) {
+                    ways += dp[i][res - i];
+                }
+                dp[pre][res] = ways;
+            }
+        }
+        return dp[1][n];
+    }
+
+    // 动态规划（斜率优化）
+    public static int wayDP(int n) {
+        int[][] dp = new int[n + 1][n + 1];
+        for (int pre = 1; pre <= n; pre++) {
+            dp[pre][0] = 1;
+            dp[pre][pre] = 1;
+        }
+        for (int pre = n - 1; pre >= 1; pre--) {
+            for (int res = pre + 1; res <= n; res++) {
+                dp[pre][res] = dp[pre + 1][res] + dp[pre][res - pre];
+            }
+        }
+        return dp[1][n];
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println(way(10));
+        System.out.println(ways2(10));
+        System.out.println(ways3dp(10));
+
+    }
+}
