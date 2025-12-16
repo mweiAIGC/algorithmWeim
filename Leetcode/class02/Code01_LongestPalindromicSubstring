@@ -9,23 +9,23 @@ public class Code01_LongestPalindromicSubstring {
         int[] ans = new int[chars.length];
         int max = Integer.MIN_VALUE;
         for (int i = 0; i < chars.length; i++) {
-            ans[i] = R > i ? Math.min(ans[2*C-i],R-i):1;
-            while(i-ans[i]>-1&&i+ans[i]<ans.length) {
-                if(chars[i-ans[i]]==chars[i+ans[i]]) {
+            ans[i] = R > i ? Math.min(ans[2 * C - i], R - i) : 1;
+            while (i - ans[i] > -1 && i + ans[i] < chars.length) {
+                if (chars[i - ans[i]] == chars[i + ans[i]]) {
                     ans[i]++;
-                }else {
+                } else {
                     break;
                 }
             }
 
-            if(ans[i] + C > R){
-                R = ans[i] + C;
-                C = ans[i];
+            if (i + ans[i] > R) {
+                R = i + ans[i];
+                C = i;
             }
             max = Math.max(max, ans[i]);
 
         }
-        return max-1;
+        return max - 1;
     }
 
     public static char[] manacherString(String str) {
