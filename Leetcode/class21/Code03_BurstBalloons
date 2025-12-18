@@ -1,0 +1,34 @@
+package class22;
+
+public class Code03_BurstBalloons {
+    /**
+     * 给定一个数组arr，代表一排有分数的气球。没打爆一个气球顿那个获得分数，假设被打爆气球的分数为X，获得分数的规则如下：
+     * 1) 如果被打包气球的左边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为L；如果被打爆气球的右边有没被打爆的气球，
+     * 找到里被打包气球最近的气球，假设分数为R。获得的分数为L*X*R.
+     * 2) 如果被打爆气球的左边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为L；如果被打爆气球的右边所有气球都被打爆。获得分数为L*X;
+     * 3) 如果被打爆气球的右边有没被打爆的气球，找到离被打爆气球最近的气球，假设分数为R；如果被打爆气球的左边所有气球都被打爆。获得分数为X*R；
+     * 4) 如果被打爆气球的左边和右边的所有气球都被打爆，获得分数为X。
+     */
+    public static int maxCoins(int[] arr) {
+        if (arr == null || arr.length == 0) return 0;
+        if (arr.length == 1) return arr[0];
+        int N = arr.length;
+        int[] help = new int[N + 2];
+        // 定义第一个和最后一个气球不爆炸
+        help[0] = help[N + 1] = 1;
+        for (int i = 0; i < N; i++) {
+            help[i + 1] = arr[i];
+        }
+        return process(help, 1, N);
+    }
+
+    private static int process(int[] help, int L, int R) {
+
+        if (L == R) return help[L - 1] * help[L] * help[R + 1];
+        int max = Math.max(help[L] + process(help, L + 1, R), help[R] + process(help, L, R - 1));
+        for (int i = L + 1; i < R; i++) {
+            max = Math.max(max, help[L - 1] * help[i] * help[R + 1] + process(help, L, i - 1) + process(help, i + 1, R));
+        }
+        return max;
+    }
+}
