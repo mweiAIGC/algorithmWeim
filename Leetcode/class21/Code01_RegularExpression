@@ -1,0 +1,51 @@
+package class22;
+
+public class Code01_RegularExpression {
+    /**
+     * 判定一个由[a-z]字符构成的字符串和一个包含'.'和'*'通配符的字符串是否匹配。
+     * 通配符'.'匹配任意单一字符,'*'匹配任意多个字符包括0个字符。字符串长度不会
+     * 超过100，字符串不为空。其中'*'不能单独使用，必须和前面一个字符配合使用。
+     * 输入描述：
+     * 字符串str和包含通配符的字符出啊pattern。1<=字符串长度<=100 输出描述：
+     * true表示匹配，false表示不匹配</>
+     */
+    public static boolean isValid(char[] s, char[] e) {
+        for (int i = 0; i < s.length; i++) {
+            if (s[i] == '*' || s[i] == '.') {
+                return false;
+            }
+        }
+        for (int i = 0; i < e.length; i++) {
+            if (e[i] == '*' && (i == 0 || e[i - 1] == '*')) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean process(char[] s, char[] e, int si, int ei) {
+        if (ei == e.length) {
+            return si == s.length;
+        }
+
+        if ((ei + 1) != e.length || e[ei + 1] != '*') {
+            return si != s.length && (s[si] == e[ei] || e[ei] == '.');
+        }
+
+        while (si < s.length && (s[si] == e[ei] || e[ei] == '.')) {
+            if (process(s, e, si, ei + 2)) {
+                return true;
+            }
+            si++;
+        }
+        // 最后尝试匹配0个（如*前置字符与s当前字符不匹配时）
+        return process(s, e, si, ei + 2);
+    }
+
+    public static boolean isMatch(String str, String pattern) {
+        if (str == null || pattern == null) return false;
+        char[] s = str.toCharArray();
+        char[] p = pattern.toCharArray();
+        return isValid(s, p) && process(s, p, 0, 0);
+    }
+}
