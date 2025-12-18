@@ -1,0 +1,98 @@
+package class21;
+
+import java.util.TreeSet;
+
+public class Code02_SubsequenceMaxModM {
+    /**
+     * 给定一个非负数组arr，和一个正数m
+     * 返回arr的所有子序列中累加和%m之后的最大值
+     */
+
+    // 复杂度:O(N*sum)
+    // 构建动态数组，arr能构成sum为true，否则为false
+    public static int subsequenceMaxMod1(int[] arr, int m) {
+        int N = arr.length;
+        int sum = 0;
+        for (int i = 0; i < N; i++) {
+            sum += arr[i];
+        }
+        boolean[][] dp = new boolean[N][sum + 1];
+        for (int i = 0; i < N; i++) {
+            dp[i][0] = true;
+        }
+        dp[0][arr[0]] = true;
+        for (int i = 1; i < N; i++) {
+            for (int j = 1; j < sum; j++) {
+                dp[i][j] = dp[i - 1][j];
+                if (j - arr[i] >= 0) {
+                    dp[i][j] = dp[i][j] || dp[i - 1][j - arr[i]];
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = sum; i >= 0; i--) {
+            if (dp[N - 1][i]) {
+                ans = Math.max(ans, i % m);
+            }
+        }
+        return ans;
+    }
+
+
+    // 复杂度：O(N*m)
+    public static int subsequenceMaxMod2(int[] arr, int m) {
+        int N = arr.length;
+        boolean[][] dp = new boolean[N][m];
+        for (int i = 0; i < N; i++) {
+            dp[i][0] = true;
+        }
+        dp[0][arr[0] % m] = true;
+        for (int i = 1; i < N; i++) {
+            for (int j = 1; j < m; j++) {
+                dp[i][j] = dp[i - 1][j];
+                int cur = arr[i] % m;
+                if (j - cur <= 0) {
+                    dp[i][j] = dp[i - 1][j] || dp[i][j - cur];
+                } else {
+                    dp[i][j] = dp[i - 1][j] || dp[i][j + m - cur];
+                }
+            }
+        }
+        int i = m - 1;
+        for (; i >= 0; i--) {
+            if (dp[N - 1][i]) {
+                break;
+            }
+        }
+        return i;
+    }
+
+    // 分治法(如果N很小)：将数组划分为左右两个(N/2)的范围。O(n * 2^(n/2))，适合 n≤40 的场景
+    public static int subsequenceMaxMod3(int[] arr, int m) {
+        if (arr.length == 1) return arr[0] % m;
+        int mid = (arr.length - 1) / 2;
+        TreeSet<Integer> sortSet1 = new TreeSet<>();
+        process(arr, 0, mid, 0, m, sortSet1);
+        TreeSet<Integer> sortSet2 = new TreeSet<>();
+        process(arr, mid + 1, arr.length - 1, 0, m, sortSet2);
+        int ans = 0;
+        for (Integer leftMod : sortSet1) {
+            ans = Math.max(ans, leftMod + sortSet2.floor(m - 1 - leftMod));
+        }
+        return ans;
+    }
+
+    public static void process(int[] arr, int start, int end, int sum, int m, TreeSet<Integer> sortSet) {
+        if (start == end + 1) {
+            sortSet.add(sum % m);
+            return;
+        } else {
+            // 不选择当前位置，递归到下一位置
+            process(arr, start + 1, end, sum, m, sortSet);
+            // 选择当前位置，递归到下一位置
+            process(arr, start + 1, end, sum + arr[start], m, sortSet);
+        }
+    }
+
+
+}
