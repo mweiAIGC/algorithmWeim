@@ -1,0 +1,23 @@
+package class22;
+
+public class Code05_HanoiProblem {
+    public static int step(int[] arr) {
+        if (arr == null || arr.length == 0) return -1;
+        return process(arr, arr.length-1, 1, 2, 3);
+    }
+
+    public static int process(int[] arr, int i, int from, int others, int to) {
+        if (i < 0) return 0;
+        if (arr[i] != from || arr[i] != to) return -1;
+        if (arr[i] == from) {
+            return process(arr, i - 1, from, to, others);
+        } else {
+            int rest = process(arr, i - 1, others, from, to);
+            if (rest == -1) {
+                return -1;
+            }
+            return (1 << i) + rest;
+        }
+
+    }
+}
