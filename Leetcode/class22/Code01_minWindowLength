@@ -1,0 +1,38 @@
+package class23;
+
+public class Code01_minWindowLength {
+    /**
+     * 给定字符串str1和str2，求str1的子串中含有str2所有字符的最小子串长度
+     * eg:
+     * str1="abcde",str2="ac"
+     * 因为"abc"包含str2所有的字符，并且在满足这一条件的str1的所有子串中，"abc"是最短的，返回3.
+     * str1="12345",str2="344"最小包含字串不存在，返回0。
+     */
+    public static int minLength(String str1, String str2) {
+        if (str1 == null || str2 == null || str1.length() < str2.length()) return -1;
+        int ans = Integer.MAX_VALUE;
+        char[] s1 = str1.toCharArray();
+        char[] s2 = str2.toCharArray();
+        int left = 0;
+        int right = 0;
+        int[] map = new int[256];
+        int all = s2.length;
+        for (int i = 0; i < s2.length; i++) {
+            map[s2[i]]++;
+        }
+        while (right != s1.length) {
+            map[s1[right]]--;
+            if(map[s1[right]] >=0) all--;
+            if(all == 0){
+                while(map[s1[left]] < 0){
+                    map[s1[left++]]++;
+                }
+                ans = Math.min(ans, right - left + 1);
+                all++;
+                map[s1[left++]]++;
+            }
+            right++;
+        }
+        return ans;
+    }
+}
