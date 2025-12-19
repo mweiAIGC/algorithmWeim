@@ -1,0 +1,43 @@
+package class22;
+
+public class Code04_MinimumCostToMergeStones {
+    /**
+     * 给定一个数组arr，和一个正数k。
+     * 这代表你可以把相邻的k个数字合成一个数字，每一次合并的代价是这些数字的累加和。
+     * Input: stones=[3,2,4,1],k=2
+     * Output:20
+     * 解释：
+     * 一开始是[3,2,4,1]，只能相邻的2个数字合成一个数字。
+     * 先合并[3,2]变成5，代价是5.那么就得到了[5,4,1].
+     * 先合并[4,1]变成5，代价是5，那么就得到[5,5].
+     * 先合并[5,5]变成10，代价是10，那么就得到一个数字10.
+     * 总代价是20，而且是这个方案是最省的。
+     */
+    public static int mergeStones(int[] stones, int k) {
+        int N = stones.length;
+        if ((N - 1) % k > 0) return -1;
+        int[] preSum = new int[N + 1];
+        for (int i = 0; i < N; i++) {
+            preSum[i + 1] = preSum[i] + stones[i];
+        }
+        return process(0, N - 1, 1, stones, k, preSum);
+    }
+
+    public static int process(int L, int R, int part, int[] arr, int k, int[] preSum) {
+        if (L == R) {
+            return part == 1 ? 0 : -1;
+        }
+        if (part == 1) {
+            int next = process(L, R, k-1, arr, k, preSum);
+            return next + preSum[R+1]-preSum[L];
+        }else {
+            int ans = Integer.MAX_VALUE;
+            for(int mid = L; mid <= R; mid += k-1){
+                int next1 = process(L, mid, 1,arr,k, preSum);
+                int next2 = process(mid+1, R, part-1,arr, k, preSum);
+                ans = Math.min(ans, next1 + next2);
+            }
+            return ans;
+        }
+    }
+}
