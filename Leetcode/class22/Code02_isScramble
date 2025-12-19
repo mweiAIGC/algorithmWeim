@@ -1,0 +1,84 @@
+package class23;
+
+public class Code02_isScramble {
+    //https://leetcode.com/problems/scramble-string/description/
+
+    /**
+     * 我们可以使用以下算法将字符串s改变为字符串t:
+     * 1.如果字符串的长度为1，则停止
+     * 2.如果字符串的长度大于1，则执行以下操作：
+     * ①在字符串的一个随机位置将其分割成两个非空子字符串，即如果字符串为s，将其分为x和y，其中 s = x + y;
+     * ②随机决定给将这两个二子字符串进行交换，或者保持他们的原有顺序。也就是说，在这一步骤之后，s可能会变成
+     * s = x + y 或者 s = y + x
+     * ③对子串 x和y的每一部分都执行步骤1的操作
+     * 给定两个长度相同的字符串s1和s2，若s2是由s1拼接而成的变位词，则返回true，否则返回false
+     */
+
+    public static boolean SameNumberAndSamLength(char[] s, char[] t) {
+        int N = s.length;
+        int M = t.length;
+        if (N != M) return false;
+        int[] map = new int[256];
+        for (int i = 0; i < N; i++) {
+            map[s[i]]++;
+        }
+        for (int i = 0; i < M; i++) {
+            map[t[i]]--;
+            if (map[t[i]] < 0) return false;
+        }
+        return true;
+    }
+
+
+    public static boolean isScramble(String s1, String s2) {
+        if (s1 == null && s2 == null) return true;
+        if ((s1 == null && s2 != null) || (s1 != null && s2 == null)) return false;
+        char[] s = s1.toCharArray();
+        char[] t = s2.toCharArray();
+        if (!SameNumberAndSamLength(s, t)) {
+            return false;
+        }
+        return process(s, t, 0, 0, s.length);
+    }
+
+    public static boolean process(char[] s, char[] t, int L1, int L2, int size) {
+        if (size == 1) return s[L1] == t[L2];
+        for (int leftPart = 1; leftPart < size; leftPart++) {
+            if ((process(s, t, L1, L2, leftPart) && process(s, t, L1 + leftPart, L2 + leftPart, size - leftPart))
+                    || (process(s, t, L1, L2 + size - leftPart, leftPart) && process(s, t, L1 + leftPart, L2, size - leftPart))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isScramble2(String s1, String s2) {
+        if (s1 == null && s2 == null) return true;
+        if ((s1 == null && s2 != null) || (s1 != null && s2 == null)) return false;
+        char[] s = s1.toCharArray();
+        char[] t = s2.toCharArray();
+        if (!SameNumberAndSamLength(s, t)) ;
+        int N = s.length;
+        boolean[][][] dp = new boolean[N][N][N + 1];
+        for (int L1 = 0; L1 < N; L1++) {
+            for (int L2 = 0; L2 < N; L2++) {
+                dp[L1][L2][1] = s[L1] == t[L2];
+            }
+        }
+        for (int size = 2; size <= N; size++) {
+            for (int L1 = 0; L1 <= N-size; L1++) {
+                for (int L2 = 0; L2 <=N-size; L2++){
+                    for(int leftPart = 1; leftPart<size; leftPart++){
+                        if ((dp[L1][L2][leftPart] && dp[L1 + leftPart][L2 + leftPart][size - leftPart]) || (dp[L1][L2 + N - leftPart][leftPart] && dp[L1 + leftPart][L2][leftPart])) {
+                            dp[L1][L2][size] = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return dp[0][0][N];
+    }
+
+}
+
