@@ -1,0 +1,75 @@
+package class23;
+
+public class Code03_PostOfficeProblem {
+    /*
+    一条直线上有居民点，邮局只能建在居民点上。给定一个有序正数数组arr,每个值表示居民点
+    的一维坐标，再给定一个正数num，表示邮局数量。选择num个居民点建立num个邮局，使
+    所有的居民点到最近邮局的总距离最短，返回最短的总距离。
+    【举例】
+    arr = [1,2,3,4,5,1000],num=2
+    第一个邮局建立在3位置，第二个邮局建立在1000位置。那么1位置到邮局的距离为2，2位置到邮局的距离为1，3位置
+    到邮局的距离为0，4位置到邮局的距离为1，5位置到邮局的距离为2，1000位置到邮局的距离为0.这种方案下的总距离为6，
+    其他任何方案的总距离都不会比该方案的总距离更短，所有返回6.
+     */
+
+    public static int minDis1(int[] arr, int num) {
+        if (arr == null || arr.length < 2 || num < 1) {
+            return 0;
+        }
+        int[][] record = getRecord(arr);
+        int N = arr.length;
+        int[][] dp = new int[N][num + 1];
+        for (int i = 0; i < N; i++) {
+            dp[i][1] = record[0][i];
+        }
+
+        for (int i = 1; i < N; i++) {
+            for (int j = 2; j <= Math.min(num, i); j++) {
+                dp[i][j] = record[0][j];
+                for (int k = i; k > 0; k--) {
+                    dp[i][j] = Math.min(dp[i][j], dp[k - 1][j - 1] + record[k][j]);
+                }
+            }
+        }
+        return dp[N - 1][num];
+    }
+
+    public static int[][] getRecord(int[] arr) {
+        int N = arr.length;
+        int[][] record = new int[N][N];
+        for (int L = 0; L < N; L++) {
+            for (int R = L + 1; R < N; R++) {
+                record[L][R] = record[L][R - 1] + arr[R] - arr[(L + R) >> 1];
+            }
+        }
+        return record;
+    }
+
+    public static int minDis2(int[] arr, int num) {
+        if (arr == null || arr.length < 2 || num < 1) return 0;
+
+        int[][] record = getRecord(arr);
+        int N = arr.length;
+        int[][] dp = new int[N][num + 1];
+        int[][] choose = new int[N][num + 1];
+        for (int i = 0; i < N; i++) {
+            dp[i][1] = record[0][i];
+        }
+
+        for (int i = 1; i < N; i++) {
+            for (int j = Math.min(num, i); j >= 2; j--) {
+                int down = choose[i - 1][j];
+                int up = j == Math.min(num, i) ? i : choose[i][j + 1];
+                dp[i][j] = record[0][i];
+                for (int k = Math.max(1, down); k <= Math.min(up, i); k++) {
+                    if (dp[k - 1][j - 1] + record[k][j] < record[k][j]) {
+                        dp[i][j] = dp[k - 1][j - 1] + record[k][j];
+                        choose[i][j] = k;
+                    }
+                }
+            }
+        }
+        return dp[N - 1][num];
+    }
+
+}
