@@ -1,4 +1,4 @@
-package class23;
+package class22;
 
 public class Code02_isScramble {
     //https://leetcode.com/problems/scramble-string/description/
