@@ -1,0 +1,61 @@
+package class23;
+
+public class Code01_MaximumSumof3NonOverlappingSubarrays {
+    /**
+     * 3个无重叠子数组的最大和
+     * 给定数组nums和整数k，找出3个长度为k且互不重叠的子数组，使它们的和最大
+     * 返回这3个子数组的起始索引
+     */
+    public static int[] maxSumOfSubarrays(int[] nums, int k) {
+        int N = nums.length;
+        int[] range = new int[N];
+        int[] left = new int[N];
+        int sum = 0;
+        for (int i = 0; i < N; i++) {
+            sum += nums[i];
+        }
+        range[0] = sum;
+        left[k - 1] = 0;
+        int max = sum;
+        for (int i = k; i < N; i++) {
+            sum = sum - nums[i - k] + nums[i];
+            range[i - k + 1] = sum;
+            left[i] = left[i - 1];
+            if (sum > max) {
+                max = sum;
+                left[i] = i - k + 1;
+            }
+        }
+        sum = 0;
+        for (int i = N - 1; i >= N - k; i--) {
+            sum += nums[i];
+        }
+        max = sum;
+        int[] right = new int[N];
+        right[N - k] = N - k;
+        for (int i = N - k - 1; i >= 0; i--) {
+            sum = sum - nums[i + k] + nums[i];
+            right[i] = right[i + 1];
+            if (sum >= max) {
+                max = sum;
+                right[i] = i;
+            }
+        }
+        int a = 0;
+        int b = 0;
+        int c = 0;
+        max = 0;
+        for (int i = k; i < N - 2 * k + 1; i++) {
+            int parts1 = range[left[i - 1]];
+            int parts2 = range[i];
+            int parts3 = range[right[i + k]];
+            if (parts1 + parts2 + parts3 > max) {
+                max = parts1 + parts2 + parts3;
+                a = left[i - 1];
+                b = i;
+                c = right[i + k];
+            }
+        }
+        return new int[]{a, b, c};
+    }
+}
