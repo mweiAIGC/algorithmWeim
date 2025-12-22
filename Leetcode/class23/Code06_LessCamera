@@ -1,0 +1,53 @@
+package class23;
+
+public class Code06_LessCamera {
+    /**
+     * 给定一棵二叉树的头节点head,如果在某一个节点x上放置一个相机，那么x的父节点，x的所有子节点以及x都可以被覆盖。
+     * 返回如果把所有数都覆盖，至少需要多少个相机。
+     * 算法分析：
+     * curNode存在3种状态：①curNode无相机但被覆盖 ②curNode放相机 ③ curNode无相机也没被覆盖
+     */
+    public static class Node {
+        public Node left;
+        public Node right;
+        public int data;
+
+        public Node(int data) {
+            this.data = data;
+        }
+    }
+
+    public static class info {
+        public int NoCamera;  //curNode 没有覆盖也没有相机
+        public int coveredHasCamera; //curNode 有相机
+        public int coveredNoCamera; // curNode 没相机但是被覆盖
+
+        public info(int NoCamera, int coveredHasCamera, int coveredNoCamera) {
+            this.NoCamera = NoCamera;
+            this.coveredNoCamera = coveredNoCamera;
+            this.coveredHasCamera = coveredHasCamera;
+        }
+    }
+
+    public static info process(Node head) {
+        if (head == null) {
+            return new info(Integer.MAX_VALUE, Integer.MAX_VALUE, 0);
+        }
+        info left = process(head.left);
+        info right = process(head.right);
+        int NoCamera = left.coveredNoCamera + right.coveredNoCamera;
+        int coveredNoCamera = Math.min(Math.min(left.coveredHasCamera + right.coveredNoCamera,
+                left.coveredNoCamera + right.coveredHasCamera), left.coveredHasCamera + right.coveredHasCamera);
+        int coveredHasCamera = Math.min(Math.min(left.NoCamera, left.coveredHasCamera), left.coveredNoCamera) +
+                Math.min(Math.min(right.NoCamera, right.coveredNoCamera), right.coveredHasCamera) + 1;
+
+        return new info(NoCamera, coveredNoCamera, coveredHasCamera);
+
+    }
+
+    public static int minCameraCovered(Node root){
+        info info = process(root);
+        return Math.min(info.NoCamera+1,Math.min(info.coveredNoCamera,info.coveredHasCamera));
+
+    }
+}
