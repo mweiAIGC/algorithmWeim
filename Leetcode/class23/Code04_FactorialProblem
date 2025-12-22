@@ -1,0 +1,83 @@
+package class23;
+
+public class Code04_FactorialProblem {
+    /**
+     * 给定一个整型数组arr，数组中每个值都为正数，表示完成一幅画作需要的时间，再给定一个
+     * 正数num，表示画匠的数量，每个花匠只能画连在一起的画作。所有的画家并行工作，请返回完成所有画作需要
+     * 最小的时间。
+     *
+     * eg:
+     * arr=[3,1,4],num=2.
+     * 最好的分配方式为第一个花匠画3和1，所需时间为4.第二个花匠画4，所需时间为4.因为并行工作，所以
+     * 最少时间为4.如果分配方式为第一个花匠画3，所需时间为3.第二个花匠画1和4，所需的时间为5.那么最少
+     * 时间为5，显然没有第一种分配方式好。所以返回4.
+     * arr=[1,1,1,4,3],num=3.
+     * 最好的分配方式为第一个花匠画前三个1，所需时间为3.第二个花匠画4.所需时间为4.第三个花匠画3，所需时间为3。
+     * 返回4.
+     */
+
+    public static int zeroNum1(int num) {
+        if (num < 0) {
+            return 0;
+        }
+        int res = 0;
+        int cur = 0;
+        for (int i = 5; i < num + 1; i = i + 5) {
+            cur = i;
+            while (cur % 5 == 0) {
+                res++;
+                cur /= 5;
+            }
+        }
+        return res;
+    }
+
+    public static int zeroNum2(int num) {
+        if (num < 0) {
+            return 0;
+        }
+        int res = 0;
+        while (num != 0) {
+            res += num / 5;
+            num /= 5;
+        }
+        return res;
+    }
+
+    public static int rightOne1(int num) {
+        if (num < 1) {
+            return -1;
+        }
+        int res = 0;
+        while (num != 0) {
+            num >>>= 1;
+            res += num;
+        }
+        return res;
+    }
+
+    public static int rightOne2(int num) {
+        if (num < 1) {
+            return -1;
+        }
+        int ones = 0;
+        int rightOne = 0;
+        while (num != 0) {
+            rightOne = (num & (~num + 1));
+            num -= rightOne;
+            ones++;
+        }
+        return num - ones;
+    }
+
+    public static void main(String[] args) {
+        int num = 1000000000;
+
+        System.out.println(zeroNum2(num));
+        System.out.println(zeroNum1(num));
+
+        System.out.println(rightOne2(num));
+        System.out.println(rightOne1(num));
+
+    }
+}
