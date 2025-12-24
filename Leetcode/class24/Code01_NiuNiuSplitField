@@ -1,0 +1,163 @@
+package class24;
+
+import java.util.Scanner;
+
+public class Code01_NiuNiuSplitField {
+    /**
+     * 妞妞和15个朋友来玩打土豪分田地的游戏，妞妞决定让你来分田地，地主的田地可以看成是一个矩形，
+     * 每个位置有一个价值。分割田地的方式是横竖割切三刀，分成16份。作为领导干部，妞妞总会选择其中
+     * 总价值最小的一份田地，作为妞妞最好的朋友，你希望妞妞取得的田地的价值和尽可能大，你知道这个值
+     * 最大可以是多少吗？
+     * 输入描述：
+     * 每个输入包含1个测试用例。每个测试用例的第1行包含两个整数n和m(1<=n,m<=75).表示田地的大小，接下来
+     * 的n行，每行包含m个0~9之间的数字，表示每块位置的价值。
+     * 输出描述：输出一行表示妞妞能所取得的最大的价值。
+     * 输入eg:4 4
+     * 3 3 3 2
+     * 3 2 3 3
+     * 3 3 3 2
+     * 2 3 2 3
+     * 输出例子:2
+     */
+
+    public static int maxMinSunIn16(int[][] matrix) {
+        if (matrix == null || matrix.length < 4 || matrix[0].length < 4) {
+            return 0;
+        }
+
+        int[][] help = generateSumRecord(matrix);
+        int col = matrix[0].length;
+        int res = Integer.MIN_VALUE;
+        for (int c1 = 0; c1 < col - 3; c1++) {
+            for (int c2 = c1 + 1; c2 < col - 2; c2++) {
+                for (int c3 = c2 + 1; c3 < col - 1; c3++) {
+                    res = Math.max(res, getBestDicision(help, c1, c2, c3));
+
+                }
+            }
+        }
+        return res;
+    }
+
+    public static int[][] generateSumRecord(int[][] matrix) {
+        int row = matrix.length;
+        int col = matrix[0].length;
+        int[][] record = new int[row][col];
+        record[0][0] = matrix[0][0];
+        for (int i = 1; i < row; i++) {
+            record[i][0] = record[i - 1][0] + matrix[i][0];
+        }
+        for (int j = 1; j < col; j++) {
+            record[0][j] = record[0][j - 1] + matrix[0][j];
+        }
+
+        for (int i = 1; i < row; i++) {
+            for (int j = 1; j < col; j++) {
+                record[i][j] = record[i - 1][j] + record[i][j - 1] - record[i - 1][j - 1] + matrix[i][j];
+            }
+        }
+
+        return record;
+    }
+
+    public static int getBestDicision(int[][] help, int c1, int c2, int c3) {
+        int[] up= getUpSplitArray(help, c1,c2,c3);
+        int[] down = getDownSplitArray(help,c1,c2,c3);
+
+        int res = Integer.MIN_VALUE;
+        for(int mid = 1; mid < help.length-2;mid ++ ){
+            res = Math.max(res, Math.min(up[mid], down[mid+1]));
+        }
+        return res;
+
+    }
+
+    public static int area(int[][] record, int i1, int j1, int i2, int j2) {
+        int all = record[i2][j2];
+        int left = j1 > 0 ? record[i2][j1 - 1] : 0;
+        int up = i1 > 0 ? record[i1 - 1][j2] : 0;
+        int makeUp = (i1 > 0 && j1 > 0) ? record[i1 - 1][j1 - 1] : 0;
+        return all - left - up + makeUp;
+    }
+
+    public static int value(int[][] record, int c1, int c2, int c3, int prow, int crow) {
+        int value1 = area(record, prow, 0, crow, c1);
+        int value2 = area(record, prow, c1 + 1, crow, c2);
+        int value3 = area(record, prow, c2 + 1, crow, c3);
+        int value4 = area(record, prow, c3 + 1, crow, record[0].length - 1);
+        return Math.min(Math.min(value1, value2), Math.min(value3, value4));
+    }
+
+    public static int[] getUpSplitArray(int[][] record, int c1, int c2, int c3) {
+        int size = record.length;
+        int[] up = new int[size];
+        int split = 0;
+        up[1] = Math.min(value(record, c1, c2, c3, 0, 0), value(record, c1, c2, c3, 1, 1));
+        for (int i = 2; i < size; i++) {
+            int minMax = toSubMatrixMin(record, c1, c2, c3, 0, split, i);
+            while (split < i) {
+                if (split == i - 1) {
+                    break;
+                }
+                int moved = toSubMatrixMin(record, c1, c2, c3, 0, split + 1, i);
+                if (moved < minMax) {
+                    break;
+                } else {
+                    minMax = moved;
+                    split++;
+                }
+            }
+            up[i] = minMax;
+        }
+        return up;
+    }
+
+    public static int[] getDownSplitArray(int[][] record, int c1, int c2, int c3) {
+        int size = record.length;
+        int[] down = new int[size];
+        int split = size - 1;
+        down[size - 2] = Math.max(value(record, c1, c2, c3, size - 2, size - 2), value(record, c1, c2, c3, size - 1, size - 1));
+
+        for (int i = size - 3; i >= 0; i--) {
+            int minMax = toSubMatrixMin(record, c1, c2, c3, i, split - 1, split - 1);
+            while (split > i) {
+                if (split == i + 1) {
+                    break;
+                }
+                int moved = toSubMatrixMin(record, c1, c2, c3, i, split - 2, size - 1);
+                if (moved < minMax) {
+                    break;
+                } else {
+                    minMax = moved;
+                    split--;
+                }
+            }
+            down[i] = minMax;
+        }
+        return down;
+    }
+
+
+    public static int toSubMatrixMin(int[][] record, int c1, int c2, int c3, int i, int split, int j) {
+        return Math.min(value(record, c1, c2, c3, i, split), value(record, c1, c2, c3, split + 1, j));
+    }
+
+
+    public static void main(String[] args){
+        Scanner sc = new Scanner(System.in);
+        while(sc.hasNext()){
+            int n = sc.nextInt();
+            int m = sc.nextInt();
+            int[][] matrix = new int[n][m];
+            for(int i = 0; i < n; i++){
+                char[] chs = sc.next().toCharArray();
+                for(int j = 0; j < m; j++){
+                    matrix[i][j] = chs[j] - '0';
+                }
+            }
+            System.out.println(maxMinSunIn16(matrix));
+        }
+        sc.close();
+    }
+
+}
